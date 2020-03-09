@@ -96,7 +96,7 @@ function getInput(evt) {
     }
 
     if (inputArray[0] == "pak") {
-      console.log('ga wat pakken');
+      console.log('Item opgepakt!');
       myInput.value = "";
     }
 
@@ -133,7 +133,9 @@ function removeFeedback() {
 }
 
 function showTreasure(currentLocation){
-if(typeof treasures[currentLocation] != "undefined"){  
+if(typeof treasures[currentLocation] != "undefined"){ 
+  
+  // hier is een schat aanwezig
       console.log(treasures[currentLocation]);
       treasure.src = "treasure/" + treasureImages[currentLocation];
       let treasureText = "er is een treasure in deze ruimte: " + treasures[currentLocation];
