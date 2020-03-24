@@ -5,7 +5,7 @@ const feedback = document.getElementById('feedback');
 const imageLocation = document.getElementById('imageLocation');
 const myDescription = document.getElementById('description');
 const myInventory = document.getElementById('inventory');
-const treasure = document.getElementById('treasure');//treasure image
+const treasure = document.getElementById('treasure');
 
 let currentLocation = 4;
 
@@ -43,25 +43,22 @@ directions[7] = ["noord", "west", "oost"];
 directions[8] = ["noord", "west"];
 
 descriptions = [];
-descriptions[0] = "u staat in een kantine. Hier zitten studenten te eten of computerspelletjes te doen";
-descriptions[1] = "u staat op een trap naar de eerste etage. Om u heen lopen studenten omhoog en omlaag";
-descriptions[2] = "u heeft gewonnen";
-descriptions[3] = "u staat in de lerarenkamer. De leraren eten hier hun lunch of drinken koffie of thee";
-descriptions[4] = "u staat in de Gang. Studenten en leraren lopen richting de klaslokalen";
-descriptions[5] = "u staat in het medialab. Hier kan geexperimenteerd worden met bijvoorbeeld virtual reality brillen";
-descriptions[6] = "u staat bij de toiletten";
-descriptions[7] = "u staat in een klaslokaal. De tafels staan recht achter elkaar en voorin is een projector en een smartboard";
-descriptions[8] = "u staat in het examenlokaal. Hier zijn de vierdejaars studenten bezig met het voorbereiden van hun examen";
+descriptions[0] = ["u staat in een kantine. Hier zitten studenten te eten of computerspelletjes te doen", "", "",""];
+descriptions[1] = ["u staat op een trap naar de eerste etage. Om u heen lopen studenten omhoog en omlaag", "", "",""];
+descriptions[2] = ["u heeft gewonnen", "", "","VPN"];
+descriptions[3] = ["u staat in de lerarenkamer. De leraren eten hier hun lunch of drinken koffie of thee", "Laptop", "LaptopTreasure.jpg",""];
+descriptions[4] = ["u staat in de Gang. Studenten en leraren lopen richting de klaslokalen", "", "",""];
+descriptions[5] = ["u staat in het medialab. Hier kan geexperimenteerd worden met bijvoorbeeld virtual reality brillen", "USB-Stick", "USB-Stick.png",""];
+descriptions[6] = ["u staat bij de toiletten", "", "",""];
+descriptions[7] = ["u staat in een klaslokaal. De tafels staan recht achter elkaar en voorin is een projector en een smartboard", "VPN", "vpn-icon.png",""];
+descriptions[8] = ["u staat in het examenlokaal. Hier zijn de vierdejaars studenten bezig met het voorbereiden van hun examen", "", "",""];
 
-treasures = [];
-treasures[3] = "Laptop";
-treasures[5] = "USB-Stick";
-treasures[8] = "VPN";
 
-treasureImages = [];
-treasureImages[3] = "LaptopTreasure.jpg";
-treasureImages[5] = "USB-Stick.png";
-treasureImages[8] = "vpn-icon.png";
+Inventory = [];
+
+
+
+
 
 
 myInput.addEventListener('keydown', getInput, false);
@@ -74,16 +71,16 @@ function getInput(evt) {
       if (directions[currentLocation].indexOf(inputArray[1]) != -1) {
         switch (inputArray[1]) {
           case "noord":
-            currentLocation -= 3;
+            if (Check(currentLocation))currentLocation -= 3;
             break;
           case "zuid":
-            currentLocation += 3;
+            if (Check(currentLocation))currentLocation += 3;
             break;
           case "oost":
-            currentLocation += 1;
+            if (Check(currentLocation))currentLocation += 1;
             break;
           case "west":
-            currentLocation -= 1;
+            if (Check(currentLocation))currentLocation -= 1;
             break;
         }
       } else {
@@ -96,9 +93,11 @@ function getInput(evt) {
     }
 
     if (inputArray[0] == "pak") {
-      console.log('Item opgepakt!');
+      if(inputArray[1] == descriptions[currentLocation][1]) Inventory.push(inputArray[1]);
+      UpdateInventory();
       myInput.value = "";
     }
+
 
     if (inputArray[0] == "gebruik"){
       console.log('ga wat gebruiken');
@@ -116,7 +115,7 @@ function getInput(evt) {
 
 function giveLocation() {
   divLocation.innerHTML = locations[currentLocation] + " grid " + currentLocation;
-  myDescription.innerHTML = descriptions[currentLocation];
+  myDescription.innerHTML = descriptions[currentLocation][0];
   imageLocation.src = "media/" + images[currentLocation];
   myDirections = "mogelijke richtingen zijn: ";
   for (let i = 0; i < directions[currentLocation].length; i++) {
@@ -124,26 +123,47 @@ function giveLocation() {
   }
   myDirections += showTreasure(currentLocation);
   myPossibilities.innerHTML = myDirections;
-  myInventory.innerHTML = "uw inventory is leeg";
-  
+  UpdateInventory();
+}
+
+function UpdateInventory(){
+  if(Inventory.length > 0){
+    let items = "your inventory is:";
+    	for (let i = 0; i < Inventory.length; i++){
+        items += " " + Inventory[i];
+      } 
+      myInventory.innerHTML = items; 
+  }else 
+  {
+    myInventory.innerHTML = "uw inventory is leeg";
+  }
 }
 
 function removeFeedback() {
   feedback.innerHTML = "";
 }
-
 function showTreasure(currentLocation){
-if(typeof treasures[currentLocation] != "undefined"){ 
-  
-  // hier is een schat aanwezig
-      console.log(treasures[currentLocation]);
-      treasure.src = "treasure/" + treasureImages[currentLocation];
-      let treasureText = "er is een treasure in deze ruimte: " + treasures[currentLocation];
-      return treasureText;
-    }
-    else{
-      treasure.src = "";
-      return "";
-    }
+  if(descriptions[currentLocation][1] != ""){
+  console.log(descriptions[currentLocation][1]);
+  treasure.src = "treasure/" + descriptions[currentLocation][2];
+  let treasureText = "Er zit een treasure in de kamer: " + descriptions[currentLocation][1];
+  return treasureText;
+  }
+  else{
+    treasure.src = "";
+    let treasureText = "";
+    return treasureText;
+  }
 }
+
+function Check(location){
+  if(descriptions[location][3] != ""){
+    for(let i = 0; i < Inventory.length; i++){
+      if(Inventory[i] == descriptions[location][3]){
+        return true;
+      }
+    } return false;
+  } return true;
+}
+
 giveLocation();
